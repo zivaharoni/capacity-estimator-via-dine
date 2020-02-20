@@ -2,6 +2,9 @@ import logging
 logger = logging.getLogger("logger")
 
 class BasicConfig(object):
+    ########## general ##########
+    name = 'debug'
+
     ######## randomness #########
     seed = 8564456
 
@@ -19,10 +22,10 @@ class BasicConfig(object):
     T = 2                       # unroll of lstm models
     DI_hidden = 512             # hidden units in DINE model
     DI_last_hidden = 256        # hidden units of last layer in DINE model
-    DI_dropout = 0.2            # dropout and recurrent dropout in DINE model
+    DI_dropout = 0.5            # dropout and recurrent dropout in DINE model
     NDT_hidden = 512            # hidden units in NDT model
     NDT_last_hidden = 100       # hidden units of last layer in NDT model
-    NDT_dropout = 0.2           # dropout and recurrent dropout in NDT model
+    NDT_dropout = 0.5           # dropout and recurrent dropout in NDT model
 
     ######## training #########
     opt = "sgd"

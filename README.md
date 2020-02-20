@@ -1,6 +1,6 @@
 # Capacity Estimation via Directed Information Neural Estimator (DINE)
 
-This repository contains an implementation of capacity of continuous channels as introduced in (Link will be added in the future).
+This repository contains an implementation of capacity estimator of continuous channels as introduced in (Link will be added in the future).
 
 ## Prerequisites
 

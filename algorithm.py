@@ -48,8 +48,10 @@ class Algorithm(object):
 
         if config.opt == "sgd":
             self._opt = keras.optimizers.SGD
+            self._opt_kwargs = {'momentum': 0.99}
         elif config.opt == "adam":
             self._opt = keras.optimizers.Adam
+            self._opt_kwargs = {}
         else:
             raise ValueError("invalid optimizer was chosen")
 
@@ -172,9 +174,6 @@ class Algorithm(object):
 
             return encoder
 
-        # randN_05 = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
-        # bias_init = keras.initializers.Constant(0.01)
-        bias_init_lstm = keras.initializers.Constant(0.0)
         norm_layer = keras.layers.Lambda(lambda x: tf.divide(x, tf.sqrt(tf.reduce_mean(tf.square(x)))) * tf.sqrt(self.P))
 
         channel_layer = keras.layers.Lambda(lambda x: x + self.channel.call())
@@ -297,8 +296,8 @@ class Algorithm(object):
         return mi_avg
 
     def train_mi(self, n_epochs=5):
-        optimizer_y = self._opt(learning_rate=self.lr_DI)
-        optimizer_xy = self._opt(learning_rate=self.lr_DI)
+        optimizer_y = self._opt(learning_rate=self.lr_DI, **self._opt_kwargs)
+        optimizer_xy = self._opt(learning_rate=self.lr_DI, **self._opt_kwargs)
 
         history_mi = list()
         self.channel.reset_states()
@@ -355,9 +354,9 @@ class Algorithm(object):
 
     def train_encoder(self, n_epochs=5):
 
-        optimizer_y = self._opt(learning_rate=self.lr_DI)
-        optimizer_xy = self._opt(learning_rate=self.lr_DI)
-        optimizer_ae = self._opt(learning_rate=self.lr_enc)
+        optimizer_y = self._opt(learning_rate=self.lr_DI, **self._opt_kwargs)
+        optimizer_xy = self._opt(learning_rate=self.lr_DI, **self._opt_kwargs)
+        optimizer_ae = self._opt(learning_rate=self.lr_enc, **self._opt_kwargs)
 
 
 

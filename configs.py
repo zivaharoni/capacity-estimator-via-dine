@@ -22,20 +22,20 @@ class BasicConfig(object):
     T = 2                       # unroll of lstm models
     DI_hidden = 512             # hidden units in DINE model
     DI_last_hidden = 256        # hidden units of last layer in DINE model
-    DI_dropout = 0.5            # dropout and recurrent dropout in DINE model
+    DI_dropout = 0.1            # dropout and recurrent dropout in DINE model
     NDT_hidden = 512            # hidden units in NDT model
     NDT_last_hidden = 100       # hidden units of last layer in NDT model
-    NDT_dropout = 0.5           # dropout and recurrent dropout in NDT model
+    NDT_dropout = 0.1           # dropout and recurrent dropout in NDT model
 
     ######## training #########
-    opt = "sgd"
-    lr_rate_DI = 1.0
-    lr_rate_enc = 0.1
-    clip_norm = 0.01
-    batch_size = 500
-    epochs_di = 500
-    epochs_enc = 5000
-    n_steps_mc = 100
+    opt = "sgd"                 # optimizer name
+    lr_rate_DI = 0.1            # lr for DINE model
+    lr_rate_enc = 0.05          # lr for NDT model
+    clip_norm = 0.005           # clip norm of gradients
+    batch_size = 500            # batch size for training
+    epochs_di = 500             # num of epochs for initial training of DINE model
+    epochs_enc = 5000           # num of epochs for interchangeably taining DINE and NDT
+    n_steps_mc = 100            # length of MC evaluation (total samples = batch_size * n_steps_mc)
 
     def show(self):
         attrs = [attr for attr in dir(self) if (not attr.startswith('__') and attr != "show")]

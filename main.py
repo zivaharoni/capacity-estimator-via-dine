@@ -8,7 +8,7 @@ import csv
 from utils import preprocess
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-logger = logging.getLogger("logger")
+# logger = logging.getLogger("logger")
 
 ################## Parsing simulation arguments ##################
 

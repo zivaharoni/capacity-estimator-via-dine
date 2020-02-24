@@ -48,7 +48,7 @@ class Algorithm(object):
 
         if config.opt == "sgd":
             self._opt = keras.optimizers.SGD
-            self._opt_kwargs = {'momentum': 0.99}
+            self._opt_kwargs = {}
         elif config.opt == "adam":
             self._opt = keras.optimizers.Adam
             self._opt_kwargs = {}
@@ -70,7 +70,7 @@ class Algorithm(object):
 
     def _build_DI_model(self):
         def build_DV(name, input_shape):
-            randN_05 = keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)
+            randN_05 = keras.initializers.RandomNormal(mean=0.0, stddev=0.01, seed=None)
             bias_init = keras.initializers.Constant(0.01)
 
             lstm = LSTMNew(self.DI_hidden, return_sequences=True, name=name, stateful=self.stateful,
@@ -205,7 +205,7 @@ class Algorithm(object):
 
     @staticmethod
     def DI_data(x, y):
-        y_tilde = tf.random.normal(tf.shape(y))
+        y_tilde = tf.random.uniform(tf.shape(y), minval=tf.reduce_min(y), maxval=tf.reduce_max(y))
         input_A = tf.concat([y, y_tilde], axis=-1)
         input_B1 = tf.concat([x, y], axis=-1)
         input_B2 = tf.concat([x, y_tilde], axis=-1)
@@ -231,15 +231,13 @@ class Algorithm(object):
 
     def plot(self, data, title, save=False):
         data = np.array(data)
-        # ma_window = np.minimum(50, data.shape[0])
-        # plt.plot(np.convolve(data, np.ones(ma_window)/ma_window, mode='same'), label='model')
         plt.plot(data, label='model')
         if self.capacity is not None:
             plt.plot(np.ones_like(data) * self.capacity, label='ground truth')
         plt.legend()
         plt.xlabel('#of updates')
         plt.ylabel('Directed Info.')
-        plt.ylim(np.percentile(data,1), np.maximum(np.percentile(data,99),self.capacity)*1.1)
+        plt.ylim(-0.01, np.maximum(np.percentile(data,99),self.capacity)*1.1)
         plt.title(title)
         plt.grid(True)
         if save:
@@ -371,7 +369,6 @@ class Algorithm(object):
         else:
             y_feedback = tf.convert_to_tensor(np.zeros([self.batch_size, 1, self.n]))
 
-        GRADS = list()
         for epoch in tqdm(range(1, n_epochs + 1)):
             if epoch > 100:#% (n_epochs // 100) == 0 and epoch > 0:
                 self.plot(history_mi, 'Training Encoder Process', save=True)
@@ -397,11 +394,9 @@ class Algorithm(object):
                 loss_xy = -self.DV_loss(T_xy)
 
             gradients = tape.gradient(loss_y, self.h_y_model.trainable_variables)
-            GRADS.append(gradients)
             gradients, _ = tf.clip_by_global_norm(gradients, self.clip_norm)
             optimizer_y.apply_gradients(zip(gradients, self.h_y_model.trainable_variables))
             gradients = tape.gradient(loss_xy, self.h_xy_model.trainable_variables)
-            GRADS.append(gradients)
             gradients, _ = tf.clip_by_global_norm(gradients, self.clip_norm)
             optimizer_xy.apply_gradients(zip(gradients, self.h_xy_model.trainable_variables))
 
@@ -429,16 +424,16 @@ class Algorithm(object):
                 loss = loss_xy - loss_y
 
             gradients = tape.gradient(loss, self.encoder.trainable_variables)
-            GRADS.append(gradients)
             gradients, _ = tf.clip_by_global_norm(gradients, self.clip_norm)
             optimizer_ae.apply_gradients(zip(gradients, self.encoder.trainable_variables))
 
             history_mi.append(-loss)
-            GRADS.append([-loss])
 
-            print(*('{:5.2f}'.format(float(tf.linalg.global_norm(g))) for g in GRADS))
-            GRADS = list()
-
+            if epoch % 100 == 0:
+                self.channel.reset_states()
+                self.encoder.reset_states()
+                self.h_y_model.reset_states()
+                self.h_xy_model.reset_states()
         return history_mi
 
 

@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="permuter1-tensorflow2" />
+  <component name="PublishConfigData" autoUpload="Always" serverName="permuter1-tensorflow2">
+    <serverData>
+      <paths name="permuter1-tensorflow2">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/common_space_docker/ziv/capacity-estimator/continuous-alphabet" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
 </project>
